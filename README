@@ -1,0 +1,3 @@
+CHIP-8 Interpreter | C | STM32F446RE | Zephyr RTOS
+
+Author: Dhruv Anand <ananddhruv29@gmail.com>
