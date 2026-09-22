@@ -1,0 +1,28 @@
+# Zephyr build output
+build/
+build-*/
+
+# West workspace
+.west/
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS 
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+
+# Zephyr/CMake misc
+*.o
+*.elf
+*.hex
+*.bin
+*.map
+compile_commands.json
