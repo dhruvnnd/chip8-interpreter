@@ -1,9 +1,6 @@
-# Zephyr build output
-build/
-build-*/
-
-# West workspace
-.west/
+# Build output
+chip8
+*.o
 
 # Editor/IDE
 .vscode/
@@ -11,18 +8,10 @@ build-*/
 *.swp
 *.swo
 
-# OS 
+# OS
 .DS_Store
 Thumbs.db
 
 # Python
 __pycache__/
 *.pyc
-
-# Zephyr/CMake misc
-*.o
-*.elf
-*.hex
-*.bin
-*.map
-compile_commands.json
