@@ -1,8 +1,7 @@
 #include <stdio.h>
 
-#include "chip8.h"
-
-int main(int argc, char **argv) {
+int main(void) {
   // TODO: load ROM from argv[1], run chip8_cycle() loop, print framebuffer
+  printf("chip-8 emulator\n");
   return 0;
 }

@@ -1,7 +1,6 @@
 #ifndef CHIP8_H
 #define CHIP8_H
 
-#include <cstdint>
 #include <stdint.h>
 
 #define MEM_SIZE 1 << 12

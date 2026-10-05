@@ -6,6 +6,8 @@ void chip8_init(void) {
 
 void chip8_load_rom(const uint8_t *data, uint16_t size) {
   // TODO
+  (void)data;
+  (void)size;
 }
 
 void chip8_cycle(void) {
