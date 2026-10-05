@@ -14,7 +14,7 @@ typedef struct chip8_t {
   uint16_t pc; // 16-bit program counter (points to current instruction)
 
   uint16_t stack[16]; // 16-level call stack for subroutines
-  uint16_t sp;        // 8-bit stack pointer
+  uint8_t sp;         // 8-bit stack pointer
 
   uint8_t delay_timer;
   uint8_t sound_timer;
