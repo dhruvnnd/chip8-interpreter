@@ -7,9 +7,9 @@
 
 typedef struct chip8_t {
   uint8_t mem[4096];
-  uint8_t v[16]; // 16 general-purpose 8-bit registers
+  uint8_t V[16]; // 16 general-purpose 8-bit registers
 
-  uint16_t i;  // 16-bit index register  for memory address
+  uint16_t I;  // 16-bit index register  for memory address
   uint16_t pc; // 16-bit program counter (points to current instruction)
 
   uint16_t stack[16]; // 16-level call stack for subroutines
@@ -23,7 +23,7 @@ typedef struct chip8_t {
   uint8_t fb[64 * 32];
 } chip8_t;
 
-void chip8_init(void);
+chip8_t *chip8_init(void);
 void chip8_load_rom(const uint8_t *data, uint16_t size);
 void chip8_cycle(void);
 void chip8_tick_timers(void);
