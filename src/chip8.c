@@ -7,6 +7,8 @@ void chip8_init(chip8_t *chip) {
 
   // set program counter to the start (0x200)
   chip->pc = START_ADDRESS;
+
+  memcpy(&chip->mem[FONT_START], fontset, sizeof fontset);
 }
 
 bool chip8_load_rom(chip8_t *chip, const uint8_t *data, size_t size) {
