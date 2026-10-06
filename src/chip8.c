@@ -9,11 +9,12 @@ void chip8_init(chip8_t *chip) {
   chip->pc = START_ADDRESS;
 }
 
-void chip8_load_rom(chip8_t *chip, const uint8_t *data, uint16_t size) {
-  // TODO
-  (void)data;
-  (void)chip;
-  (void)size;
+bool chip8_load_rom(chip8_t *chip, const uint8_t *data, size_t size) {
+  if (size > MEM_SIZE - START_ADDRESS) {
+    return false;
+  }
+  memcpy(&chip->mem[START_ADDRESS], data, size);
+  return true;
 }
 
 void chip8_cycle(chip8_t *chip) {

@@ -1,6 +1,8 @@
 #ifndef CHIP8_H
 #define CHIP8_H
 
+#include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
 #define MEM_SIZE (1 << 12)
@@ -25,7 +27,7 @@ typedef struct chip8_t {
 } chip8_t;
 
 void chip8_init(chip8_t *chip);
-void chip8_load_rom(chip8_t *chip, const uint8_t *data, uint16_t size);
+bool chip8_load_rom(chip8_t *chip, const uint8_t *data, size_t size);
 void chip8_cycle(chip8_t *chip);
 void chip8_tick_timers(chip8_t *chip);
 
