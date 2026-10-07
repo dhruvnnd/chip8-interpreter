@@ -1,7 +1,7 @@
 #include "chip8.h"
 #include <string.h>
 
-static void __draw(chip8_t *chip, uint8_t x, uint8_t y, uint8_t n) {
+static void _op_draw(chip8_t *chip, uint8_t x, uint8_t y, uint8_t n) {
   // starting position wraps around screen
   uint8_t px = chip->V[x] % SCREEN_W;
   uint8_t py = chip->V[y] % SCREEN_H;
@@ -56,7 +56,7 @@ void chip8_cycle(chip8_t *chip) {
   uint8_t x = (opcode >> 8) & 0xF;
   uint8_t y = (opcode >> 4) & 0xF;
   uint8_t n = opcode & 0xF;
-  uint16_t nn = opcode & 0xFF;
+  uint8_t nn = opcode & 0xFF;
   uint16_t nnn = opcode & 0xFFF;
 
   // switch instruction family
@@ -64,13 +64,22 @@ void chip8_cycle(chip8_t *chip) {
   case 0x0000: /* 00E0 CLS, 00EE RET */
     if (opcode == 0x00E0)
       memset(chip->fb, 0, sizeof chip->fb);
+    else if (opcode == 0x00EE)
+      chip->pc = chip->stack[--chip->sp];
     break;
   case 0x1000: /* 1nnn JP addr */
     chip->pc = nnn;
     break;
   case 0x2000: /* CALL addr */
-    chip->sp++;
-    chip->stack[chip->sp] = chip->pc;
+    if (chip->sp >= 16) {
+      printf("chip8: stack overflow! PC: 0x%03X Target: 0x%03X\n", chip->pc,
+             opcode & 0x0FFF);
+      for (int i = 0; i < 16; i++) {
+        printf("\tchip->stack[%d]: 0x%03X\n", i, chip->stack[i]);
+      }
+      exit(1);
+    }
+    chip->stack[chip->sp++] = chip->pc;
     chip->pc = nnn;
     break;
   case 0x6000: /* LD Vx, byte */
@@ -83,7 +92,7 @@ void chip8_cycle(chip8_t *chip) {
     chip->I = nnn;
     break;
   case 0xD000: /* DRW Vx, Vy, nibble */
-    __draw(chip, x, y, n);
+    _op_draw(chip, x, y, n);
     break;
   default:
     (void)y;

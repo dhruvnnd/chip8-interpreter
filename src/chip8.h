@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define MEM_SIZE (1 << 12)
 #define START_ADDRESS 0x200
