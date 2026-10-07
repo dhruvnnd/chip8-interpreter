@@ -10,6 +10,9 @@
 #define START_ADDRESS 0x200
 #define FONT_START 0x50
 
+#define SCREEN_W 64
+#define SCREEN_H 32
+
 static const uint8_t fontset[80] = {
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
     0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -44,7 +47,7 @@ typedef struct chip8_t {
 
   uint8_t keypad[16];
 
-  uint8_t fb[64 * 32];
+  uint8_t fb[SCREEN_W * SCREEN_H];
 } chip8_t;
 
 void chip8_init(chip8_t *chip);

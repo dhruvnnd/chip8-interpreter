@@ -1,6 +1,36 @@
 #include "chip8.h"
 #include <string.h>
 
+static void __draw(chip8_t *chip, uint8_t x, uint8_t y, uint8_t n) {
+  // starting position wraps around screen
+  uint8_t px = chip->V[x] % SCREEN_W;
+  uint8_t py = chip->V[y] % SCREEN_H;
+
+  chip->V[0xF] = 0;
+
+  for (uint8_t row = 0; row < n; row++) {
+    if (py + row >= SCREEN_H) {
+      break; // clip at bottom edge
+    }
+
+    uint8_t sprite = chip->mem[chip->I + row];
+
+    for (uint8_t col = 0; col < 8; col++) {
+      if (px + col >= SCREEN_W) {
+        break; // clip at right edge
+      }
+
+      if (sprite & (0x80 >> col)) {
+        uint8_t *pixel = &chip->fb[(py + row) * SCREEN_W + (px + col)];
+        if (*pixel) {
+          chip->V[0xF] = 1; // a lit pixel is being turned off;collision
+        }
+        *pixel ^= 1;
+      }
+    }
+  }
+}
+
 void chip8_init(chip8_t *chip) {
   // clear memory, display & registers
   memset(chip, 0, sizeof *chip);
@@ -32,6 +62,8 @@ void chip8_cycle(chip8_t *chip) {
   // switch instruction family
   switch (opcode & 0xF000) {
   case 0x0000: /* 00E0 CLS, 00EE RET */
+    if (opcode == 0x00E0)
+      memset(chip->fb, 0, sizeof chip->fb);
     break;
   case 0x1000: /* 1nnn JP addr */
     chip->pc = nnn;
@@ -51,7 +83,7 @@ void chip8_cycle(chip8_t *chip) {
     chip->I = nnn;
     break;
   case 0xD000: /* DRW Vx, Vy, nibble */
-               // draw
+    __draw(chip, x, y, n);
     break;
   default:
     (void)y;
