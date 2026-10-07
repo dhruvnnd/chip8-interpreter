@@ -31,5 +31,17 @@ int main(int argc, char *argv[]) {
   }
 
   printf("chip8: successfully loaded ROM (%s)\n", argv[1]);
+
+  size_t i;
+  int k = 0;
+  for (i = 0; i < n; i++) {
+    if (k == 8) {
+      printf("\n");
+      k = 0;
+    }
+    printf("0x%.2X ", buf[i]);
+    k++;
+  }
+  printf("\n");
   return 0;
 }
