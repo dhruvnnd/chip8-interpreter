@@ -9,9 +9,9 @@
 
 static void draw(const chip8_t *chip) {
   printf("\033[H"); // move cursor to top-left
-  for (int y = 0; y < 32; y++) {
-    for (int x = 0; x < 64; x++) {
-      putchar(chip->fb[y * 64 + x] ? '#' : ' ');
+  for (int y = 0; y < SCREEN_H; y++) {
+    for (int x = 0; x < SCREEN_W; x++) {
+      putchar(chip->fb[y * SCREEN_W + x] ? '#' : ' ');
     }
     putchar('\n');
   }
@@ -23,7 +23,6 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "usage: %s <rom.ch8>\n", argv[0]);
     return 1;
   }
-  // TODO: run chip8_cycle() loop, print framebuffer
   printf("chip-8 emulator\n");
 
   chip8_t chip;
