@@ -14,6 +14,12 @@
 #define SCREEN_W 64
 #define SCREEN_H 32
 
+#ifdef DEBUG
+#define LOG(...) fprintf(stderr, "[chip8] " __VA_ARGS__)
+#else
+#define LOG(...) ((void)0)
+#endif
+
 static const uint8_t fontset[80] = {
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
     0x20, 0x60, 0x20, 0x20, 0x70, // 1

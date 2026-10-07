@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #define CYCLES_PER_FRAME 10
-#define FRAME_US 16667
+#define FRAME_US 16666667L
 
 static void draw(const chip8_t *chip) {
   printf("\033[H"); // move cursor to top-left

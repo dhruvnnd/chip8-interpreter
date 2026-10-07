@@ -51,6 +51,7 @@ bool chip8_load_rom(chip8_t *chip, const uint8_t *data, size_t size) {
 
 void chip8_cycle(chip8_t *chip) {
   uint16_t opcode = (chip->mem[chip->pc] << 8) | chip->mem[chip->pc + 1];
+  LOG("pc=0x%03X op=0x%04X\n", chip->pc, opcode);
   chip->pc += 2;
 
   uint8_t x = (opcode >> 8) & 0xF;
@@ -66,8 +67,7 @@ void chip8_cycle(chip8_t *chip) {
       memset(chip->fb, 0, sizeof chip->fb);
     else if (opcode == 0x00EE) {
       if (chip->sp == 0) {
-        printf("chip8: stack underflow! PC: 0x%03X Target: 0x%03X\n", chip->pc,
-               opcode & 0x0FFF);
+        fprintf(stderr, "chip8: stack underflow! PC: 0x%03X\n", chip->pc - 2);
         return;
       }
       chip->pc = chip->stack[--chip->sp];
@@ -78,10 +78,10 @@ void chip8_cycle(chip8_t *chip) {
     break;
   case 0x2000: /* CALL addr */
     if (chip->sp >= 16) {
-      printf("chip8: stack overflow! PC: 0x%03X Target: 0x%03X\n", chip->pc,
-             opcode & 0x0FFF);
+      fprintf(stderr, "chip8: stack overflow! PC: 0x%03X Target: 0x%03X\n",
+              chip->pc - 2, nnn);
       for (int i = 0; i < 16; i++) {
-        printf("\tchip->stack[%d]: 0x%03X\n", i, chip->stack[i]);
+        LOG("stack[%d]: 0x%03X\n", i, chip->stack[i]);
       }
       return;
     }
@@ -101,12 +101,8 @@ void chip8_cycle(chip8_t *chip) {
     _op_draw(chip, x, y, n);
     break;
   default:
-    (void)y;
-    (void)x;
-    (void)n;
-    (void)nn;
-    (void)nnn;
-    printf("chip8: unhandled instruction family (0x%04X)\n", (opcode & 0xF000));
+    fprintf(stderr, "chip8: unhandled opcode 0x%04X at PC 0x%03X\n", opcode,
+            chip->pc - 2);
     break;
   }
 }
