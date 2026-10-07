@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #define MEM_SIZE (1 << 12)
 #define START_ADDRESS 0x200

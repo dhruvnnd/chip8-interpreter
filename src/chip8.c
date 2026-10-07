@@ -20,8 +20,43 @@ bool chip8_load_rom(chip8_t *chip, const uint8_t *data, size_t size) {
 }
 
 void chip8_cycle(chip8_t *chip) {
-  // TODO: fetch, decode, execute
-  (void)chip;
+  uint16_t opcode = (chip->mem[chip->pc] << 8) | chip->mem[chip->pc + 1];
+  chip->pc += 2;
+
+  uint8_t x = (opcode >> 8) & 0xF;
+  uint8_t y = (opcode >> 4) & 0xF;
+  uint8_t n = opcode & 0xF;
+  uint16_t nn = opcode & 0xFF;
+  uint16_t nnn = opcode & 0xFFF;
+
+  // switch instruction family
+  switch (opcode & 0xF000) {
+  case 0x0000: /* 00E0 CLS, 00EE RET */
+    break;
+  case 0x1000: /* 1nnn JP addr */
+    chip->pc = nnn;
+    break;
+  case 0x2000: /* CALL addr */
+    chip->sp++;
+    chip->stack[chip->sp] = chip->pc;
+    chip->pc = nnn;
+    break;
+  case 0x6000: /* LD Vx, byte */
+    chip->V[x] = nn;
+    break;
+  case 0x7000: /* ADD Vx, byte */
+    chip->V[x] += nn;
+    break;
+  case 0xA000: /* LD I, addr */
+    chip->I = nnn;
+    break;
+  case 0xD000: /* DRW Vx, Vy, nibble */
+               // draw
+    break;
+  default:
+    printf("chip8: unhandled instruction family (%d)\n", (opcode & 0xF000));
+    break;
+  }
 }
 
 void chip8_tick_timers(chip8_t *chip) {
