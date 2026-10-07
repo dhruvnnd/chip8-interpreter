@@ -64,8 +64,14 @@ void chip8_cycle(chip8_t *chip) {
   case 0x0000: /* 00E0 CLS, 00EE RET */
     if (opcode == 0x00E0)
       memset(chip->fb, 0, sizeof chip->fb);
-    else if (opcode == 0x00EE)
+    else if (opcode == 0x00EE) {
+      if (chip->sp == 0) {
+        printf("chip8: stack underflow! PC: 0x%03X Target: 0x%03X\n", chip->pc,
+               opcode & 0x0FFF);
+        return;
+      }
       chip->pc = chip->stack[--chip->sp];
+    }
     break;
   case 0x1000: /* 1nnn JP addr */
     chip->pc = nnn;
@@ -77,7 +83,7 @@ void chip8_cycle(chip8_t *chip) {
       for (int i = 0; i < 16; i++) {
         printf("\tchip->stack[%d]: 0x%03X\n", i, chip->stack[i]);
       }
-      exit(1);
+      return;
     }
     chip->stack[chip->sp++] = chip->pc;
     chip->pc = nnn;
@@ -100,7 +106,7 @@ void chip8_cycle(chip8_t *chip) {
     (void)n;
     (void)nn;
     (void)nnn;
-    printf("chip8: unhandled instruction family (%d)\n", (opcode & 0xF000));
+    printf("chip8: unhandled instruction family (0x%04X)\n", (opcode & 0xF000));
     break;
   }
 }
