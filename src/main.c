@@ -1,5 +1,22 @@
+#define _POSIX_C_SOURCE 199309L
+#include <time.h>
+
 #include "chip8.h"
 #include <stdio.h>
+
+#define CYCLES_PER_FRAME 10
+#define FRAME_US 16667
+
+static void draw(const chip8_t *chip) {
+  printf("\033[H"); // move cursor to top-left
+  for (int y = 0; y < 32; y++) {
+    for (int x = 0; x < 64; x++) {
+      putchar(chip->fb[y * 64 + x] ? '#' : ' ');
+    }
+    putchar('\n');
+  }
+  fflush(stdout);
+}
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {
@@ -43,5 +60,15 @@ int main(int argc, char *argv[]) {
     k++;
   }
   printf("\n");
+
+  printf("\033[2J"); // clear terminal once
+  for (;;) {
+    for (int i = 0; i < CYCLES_PER_FRAME; i++) {
+      chip8_cycle(&chip);
+    }
+    draw(&chip);
+    struct timespec ts = {0, FRAME_US};
+    nanosleep(&ts, NULL);
+  }
   return 0;
 }

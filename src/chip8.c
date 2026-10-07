@@ -54,12 +54,21 @@ void chip8_cycle(chip8_t *chip) {
                // draw
     break;
   default:
+    (void)y;
+    (void)x;
+    (void)n;
+    (void)nn;
+    (void)nnn;
     printf("chip8: unhandled instruction family (%d)\n", (opcode & 0xF000));
     break;
   }
 }
 
 void chip8_tick_timers(chip8_t *chip) {
-  // TODO: decrement delay/sound timers at 60Hz
-  (void)chip;
+  if (chip->delay_timer > 0) {
+    chip->delay_timer--;
+  }
+  if (chip->sound_timer > 0) {
+    chip->sound_timer--;
+  }
 }
