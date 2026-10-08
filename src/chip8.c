@@ -176,6 +176,75 @@ void chip8_cycle(chip8_t *chip) {
   case 0xD000: /* DRW Vx, Vy, nibble */
     _op_draw(chip, x, y, n);
     break;
+  case 0xE000:
+    switch (nn) {
+    case 0x9E: /* SKP Vx */
+      if (chip->keypad[chip->V[x] & 0xF])
+        chip->pc += 2;
+      break;
+    case 0xA1: /* SKNP Vx */
+      if (!chip->keypad[chip->V[x] & 0xF])
+        chip->pc += 2;
+      break;
+    }
+    break;
+  case 0xF000:
+    switch (nn) {
+    case 0x07: /* LD Vx, DT */
+      chip->V[x] = chip->delay_timer;
+      break;
+    case 0x0A: /* LD Vx, K */
+    {
+      int k;
+      for (k = 0; k < 16 && !chip->keypad[k]; k++)
+        ;
+      if (k < 16)
+        chip->V[x] = k;
+      else
+        chip->pc -= 2; /* no key pressed: re-run this instruction next cycle */
+    } break;
+    case 0x15: /* LD DT, Vx */
+      chip->delay_timer = chip->V[x];
+      break;
+    case 0x18: /* LD ST, Vx */
+      chip->sound_timer = chip->V[x];
+      break;
+    case 0x1E: /* ADD I, Vx */
+      chip->I = chip->I + chip->V[x];
+      break;
+    case 0x29: /* LD F, Vx */
+      chip->I = FONT_START + (chip->V[x] & 0xF) * 5;
+      break;
+    case 0x33: /* LD B, Vx */
+      if (chip->I + 2 >= MEM_SIZE) {
+        fprintf(stderr, "chip8: BCD out of bounds! PC: 0x%03X I: 0x%03X\n",
+                chip->pc - 2, chip->I);
+        return;
+      }
+      chip->mem[chip->I] = chip->V[x] / 100;
+      chip->mem[chip->I + 1] = (chip->V[x] / 10) % 10;
+      chip->mem[chip->I + 2] = chip->V[x] % 10;
+      break;
+    case 0x55: /* LD [I], Vx */
+      if (chip->I + x >= MEM_SIZE) {
+        fprintf(stderr, "chip8: store out of bounds! PC: 0x%03X I: 0x%03X\n",
+                chip->pc - 2, chip->I);
+        return;
+      }
+      for (int i = 0; i <= x; i++)
+        chip->mem[chip->I + i] = chip->V[i];
+      break;
+    case 0x65: /* LD Vx, [I] */
+      if (chip->I + x >= MEM_SIZE) {
+        fprintf(stderr, "chip8: load out of bounds! PC: 0x%03X I: 0x%03X\n",
+                chip->pc - 2, chip->I);
+        return;
+      }
+      for (int i = 0; i <= x; i++)
+        chip->V[i] = chip->mem[chip->I + i];
+      break;
+    }
+    break;
   default:
     fprintf(stderr, "chip8: unhandled opcode 0x%04X at PC 0x%03X\n", opcode,
             chip->pc - 2);
