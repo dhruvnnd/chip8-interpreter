@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define MEM_SIZE (1 << 12)
 #define START_ADDRESS 0x200

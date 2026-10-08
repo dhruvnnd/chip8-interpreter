@@ -40,6 +40,8 @@ void chip8_init(chip8_t *chip) {
   chip->pc = START_ADDRESS;
 
   memcpy(&chip->mem[FONT_START], fontset, sizeof fontset);
+
+  srand(time(NULL));
 }
 
 bool chip8_load_rom(chip8_t *chip, const uint8_t *data, size_t size) {
@@ -167,6 +169,9 @@ void chip8_cycle(chip8_t *chip) {
     break;
   case 0xB000: /* JP V0, addr */
     chip->pc = nnn + chip->V[0];
+    break;
+  case 0xC000: /* RND Vx, byte */
+    chip->V[x] = (rand() & 0xFF) & nn;
     break;
   case 0xD000: /* DRW Vx, Vy, nibble */
     _op_draw(chip, x, y, n);
