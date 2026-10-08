@@ -50,6 +50,11 @@ bool chip8_load_rom(chip8_t *chip, const uint8_t *data, size_t size) {
 }
 
 void chip8_cycle(chip8_t *chip) {
+  if (chip->pc > MEM_SIZE - 2) {
+    fprintf(stderr, "chip8: PC out of bounds! PC: 0x%03X\n", chip->pc);
+    return;
+  }
+
   uint16_t opcode = (chip->mem[chip->pc] << 8) | chip->mem[chip->pc + 1];
   LOG("pc=0x%03X op=0x%04X\n", chip->pc, opcode);
   chip->pc += 2;
