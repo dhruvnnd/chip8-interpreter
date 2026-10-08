@@ -88,14 +88,33 @@ void chip8_cycle(chip8_t *chip) {
     chip->stack[chip->sp++] = chip->pc;
     chip->pc = nnn;
     break;
+  case 0x3000: /* SE Vx, byte */
+    if (chip->V[x] == nn)
+      chip->pc += 2;
+    break;
+  case 0x4000: /* SNE Vx, byte */
+    if (chip->V[x] != nn)
+      chip->pc += 2;
+    break;
+  case 0x5000: /* SE Vx, Vy */
+    if (chip->V[x] == chip->V[y])
+      chip->pc += 2;
+    break;
   case 0x6000: /* LD Vx, byte */
     chip->V[x] = nn;
     break;
   case 0x7000: /* ADD Vx, byte */
     chip->V[x] += nn;
     break;
+  case 0x9000: /* SNE Vx, Vy */
+    if (chip->V[x] != chip->V[y])
+      chip->pc += 2;
+    break;
   case 0xA000: /* LD I, addr */
     chip->I = nnn;
+    break;
+  case 0xB000: /* JP V0, addr */
+    chip->pc = nnn + chip->V[0];
     break;
   case 0xD000: /* DRW Vx, Vy, nibble */
     _op_draw(chip, x, y, n);
