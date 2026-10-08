@@ -1,4 +1,5 @@
 #include "chip8.h"
+#include <stdint.h>
 #include <string.h>
 
 static void _op_draw(chip8_t *chip, uint8_t x, uint8_t y, uint8_t n) {
@@ -110,6 +111,52 @@ void chip8_cycle(chip8_t *chip) {
     break;
   case 0x7000: /* ADD Vx, byte */
     chip->V[x] += nn;
+    break;
+  case 0x8000:
+    switch (n) {
+      uint16_t sum;
+      uint8_t diff;
+      uint8_t flag;
+    case 0x0: /* LD Vx, Vy */
+      chip->V[x] = chip->V[y];
+      break;
+    case 0x1: /* OR Vx, Vy*/
+      chip->V[x] = chip->V[x] | chip->V[y];
+      break;
+    case 0x2: /* AND Vx, Vy */
+      chip->V[x] = chip->V[x] & chip->V[y];
+      break;
+    case 0x3: /* XOR Vx, Vy */
+      chip->V[x] = chip->V[x] ^ chip->V[y];
+      break;
+    case 0x4: /* ADD Vx, Vy */
+      sum = chip->V[x] + chip->V[y];
+      chip->V[x] = sum & 0xFF;
+      chip->V[0xF] = sum > 255;
+      break;
+    case 0x5: /* SUB Vx, Vy */
+      diff = chip->V[x] - chip->V[y];
+      flag = chip->V[x] >= chip->V[y];
+      chip->V[x] = diff;
+      chip->V[0xF] = flag;
+      break;
+    case 0x6: /* SHR Vx {, Vy} */
+      flag = chip->V[x] & 0x1;
+      chip->V[x] >>= 1;
+      chip->V[0xF] = flag;
+      break;
+    case 0x7: /* SUBN Vx, Vy */
+      diff = chip->V[y] - chip->V[x];
+      flag = chip->V[y] >= chip->V[x];
+      chip->V[x] = diff;
+      chip->V[0xF] = flag;
+      break;
+    case 0xE: /* SHL Vx {, Vy} */
+      flag = chip->V[x] >> 7;
+      chip->V[x] <<= 1;
+      chip->V[0xF] = flag;
+      break;
+    }
     break;
   case 0x9000: /* SNE Vx, Vy */
     if (chip->V[x] != chip->V[y])
