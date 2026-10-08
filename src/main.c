@@ -65,6 +65,7 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < CYCLES_PER_FRAME; i++) {
       chip8_cycle(&chip);
     }
+    chip8_tick_timers(&chip);
     draw(&chip);
     struct timespec ts = {0, FRAME_US};
     nanosleep(&ts, NULL);
